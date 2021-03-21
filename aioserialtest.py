@@ -53,12 +53,19 @@ aioserial_instance = aioserial.AioSerial(port=port,baudrate=baudrate)
 
 loop = asyncio.get_event_loop()
 
+cmd = ""
+
+received = ""
+
 async def receive(aioserial_instance: aioserial.AioSerial):
     while True:
         data: bytes = await aioserial_instance.read_async()
+        received += data.decode(errors='ignore)    
         print(data.decode(errors='ignore'),end='',flush=True)
-        if b';' in data:
-            print()
+        if len(received) >= 7:
+            if cmd != received[:7]:
+                print("validation error!")
+        received = ""
 
 async def write(aioserial_instance: aioserial.AioSerial):
     while True:
